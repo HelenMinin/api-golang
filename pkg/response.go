@@ -5,8 +5,8 @@ type ResponseError struct {
 	Message string
 }
 
-func NewResponseError(cause string, err error) ResponseError {
-	return ResponseError{
+func NewResponseError(cause string, err error) *ResponseError {
+	return &ResponseError{
 		Cause:   cause,
 		Message: err.Error(),
 	}

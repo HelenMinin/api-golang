@@ -1,17 +1,25 @@
 package http
 
 import (
-	"api/golang/internal/handler"
+	"facec/blog/internal/handler"
 
 	"github.com/gin-gonic/gin"
 )
 
 func StartServer() error {
 	engine := gin.Default()
+	gin.EnableJsonDecoderDisallowUnknownFields()
 
 	engine.GET("/health", handler.HealthCheck)
-	engine.GET("/posts", handler.GetPosts)
-	engine.POST("/posts", handler.CreatePost)
 
-	return engine.Run(":3000")
+	posts := engine.Group("/posts")
+	posts.GET("/", handler.GetPosts)
+	posts.POST("/", handler.CreatePost)
+
+	posts.GET("/:id", handler.GetPost)
+	posts.PUT("/:id", handler.UpdatePost)
+	posts.PATCH("/:id", handler.PartialUpdatePost)
+	posts.DELETE("/:id", handler.DeletePost)
+
+	return engine.Run()
 }

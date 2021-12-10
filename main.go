@@ -1,13 +1,13 @@
 package main
 
 import (
-	"api/golang/internal/http"
+	"facec/blog/internal/http"
 	"log"
 )
 
 func main() {
-	log.Println("Starting server 🚀")
+	log.Println("iniciando...")
 
-	error := http.StartServer()
-	log.Fatal(error)
+	err := http.StartServer()
+	log.Fatalln(err)
 }
