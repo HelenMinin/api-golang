@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"facec/blog/internal/db"
+	"facec/blog/internal/container"
 	"facec/blog/pkg"
 	"fmt"
 	"io"
@@ -12,12 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
-var postRepository = db.PostRepository{}
+const paramId = "id"
 
 func GetPosts(c *gin.Context) {
 	titleParan := c.Query("title")
 
-	posts := postRepository.FindPosts(titleParan)
+	posts := container.PostRepository.FindPosts(titleParan)
 	c.JSON(200, posts)
 }
 
@@ -36,14 +36,14 @@ func CreatePost(c *gin.Context) {
 		DateTime: time.Now(),
 	}
 
-	postRepository.InsertPost(post)
+	container.PostRepository.InsertPost(post)
 	log.Println(fmt.Sprintf("post %s created", post))
 
 	c.JSON(201, post)
 }
 
 func UpdatePost(c *gin.Context) {
-	post, responseError := findPost(c)
+	post, responseError := findPost(c, paramId)
 	if responseError != nil {
 		c.JSON(404, responseError)
 		return
@@ -60,11 +60,13 @@ func UpdatePost(c *gin.Context) {
 	post.User = requestPost.User
 	post.DateTime = time.Now()
 
+	container.PostRepository.PartialUpdate(post)
+
 	c.JSON(200, post)
 }
 
 func PartialUpdatePost(c *gin.Context) {
-	post, responseError := findPost(c)
+	post, responseError := findPost(c, paramId)
 	if responseError != nil {
 		c.JSON(404, responseError)
 		return
@@ -100,19 +102,19 @@ func PartialUpdatePost(c *gin.Context) {
 
 func DeletePost(c *gin.Context) {
 
-	post, respondeError := findPost(c)
+	post, respondeError := findPost(c, paramId)
 	if respondeError != nil {
 		c.JSON(404, respondeError)
 		return
 	}
 
-	delete(postMap, post.Id.String())
+	container.PostRepository.DeletePost(post.Id.String())
 	c.JSON(204, "")
 }
 
 func GetPost(c *gin.Context) {
 
-	post, responseError := findPost(c)
+	post, responseError := findPost(c, paramId)
 	if responseError != nil {
 		c.JSON(404, responseError)
 		return
@@ -135,17 +137,4 @@ func parseBody(c *gin.Context) (*pkg.RequestPost, *pkg.ResponseError) {
 	}
 
 	return &requestPost, nil
-}
-
-func findPost(c *gin.Context) (*pkg.Post, *pkg.ResponseError) {
-	id := c.Param("id")
-	post := postMap[id]
-	if post == nil {
-		return nil, &pkg.ResponseError{
-			Cause:   "id not found",
-			Message: fmt.Sprintf("id %s not found", id),
-		}
-	}
-
-	return post, nil
 }
