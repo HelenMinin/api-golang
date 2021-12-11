@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const paramPostId = "postId"
+const paramPostId = "id"
 
 func CreateComment(c *gin.Context) {
 	post, responseError := findPost(c, paramPostId)

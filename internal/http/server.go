@@ -21,8 +21,8 @@ func StartServer() error {
 	posts.PATCH("/:id", handler.PartialUpdatePost)
 	posts.DELETE("/:id", handler.DeletePost)
 
-	posts.POST("/:postId/comments", handler.CreateComment)
-	posts.GET("/:postId/comments", handler.GetCommentsByPost)
+	posts.POST("/:id/comments", handler.CreateComment)
+	posts.GET("/:id/comments", handler.GetCommentsByPost)
 
 	//posts.GET("/:id/comments/:id", handler.CreateComment)
 

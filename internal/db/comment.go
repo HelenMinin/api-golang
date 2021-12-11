@@ -11,7 +11,11 @@ type CommentRepository struct {
 
 func (CommentRepository) InsertComment(postId string, comment *pkg.Comment) {
 	commentMap := commentPostMap[postId]
+	if commentMap == nil {
+		commentMap = make(map[string]*pkg.Comment)
+	}
 	commentMap[comment.Id.String()] = comment
+	commentPostMap[postId] = commentMap
 }
 
 func (CommentRepository) GetComments(postId string) []*pkg.Comment {
